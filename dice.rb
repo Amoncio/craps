@@ -1,16 +1,22 @@
 class Dice
-  attr_reader :sides
+  attr_reader :sides, :last_roll
 
   def initialize(sides)
     @sides = sides
+    @last_roll = []
   end
 
   def roll(number_of_rolls = 1)
-    total = 0
+    rolls = []
     number_of_rolls.times do
-      total += rand(1..sides)
+      rolls << rand(1..sides)
     end
-    total
+    self.last_roll = rolls
+    rolls.sum
   end
+
+  private
+
+  attr_writer :last_roll
 end
   
