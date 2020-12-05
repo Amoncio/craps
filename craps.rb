@@ -1,26 +1,25 @@
 #!usr/bin/env ruby
 
+require_relative "helpers/main_helper"
 require_relative "lib/craps"
 require_relative "lib/capital"
 
-class BetError < StandardError
-end
-
 include Lib
+include MainHelper
 
-puts "Welcome to Craps!"
+welcome
 
 # 100 USD is starting capital
 STARTING_CAPITAL = 100
 
 capital = Capital.new(STARTING_CAPITAL)
 
-puts "You have an initial $#{capital.funds}."
+display_capital(capital)
 
 loop do
   begin
-  print "How much are you betting? "
-  bet = Float(gets)
+
+  bet = enter_bet
 
   raise(BetError, "Your bet can't go over $#{capital.funds}.") if bet > capital.funds
   raise(BetError, "Your bet has to be postive.") unless bet.positive?
@@ -32,19 +31,18 @@ loop do
     retry
 end
 
-  craps = Craps.new
-  craps.start_game
+  game = Craps.new
+  game.start_game
 
-  if craps.win_state
-    puts "Congratulations! You won!"
-    capital.increase(bet)
-  else
-    puts "Oops, you lost."
-    capital.deduct(bet)
+  process_game_result(game, capital, bet)
+
+  display_capital(capital)
+
+  unless capital.funds.positive?
+    puts "You don't have enough money."
+    break
   end
 
-  puts "You have $#{capital.funds}."
-  print "Do you want to play again? "
-  choice = gets.upcase[0]
+  choice = play_again_prompt
   break unless choice == "Y"
 end
