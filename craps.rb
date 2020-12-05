@@ -1,46 +1,48 @@
-class Craps
-  require_relative "dice"
+#!usr/bin/env ruby
 
-  attr_reader :win_state
+require_relative "helpers/main_helper"
+require_relative "lib/craps"
+require_relative "lib/capital"
 
-  def start_game
-    # Reset win state whenever we start a new game
-    self.win_state = nil
+include Lib
+include MainHelper
 
-    roll = roll_2d6
-    if seven_eleven?(roll)
-      self.win_state = true
-    elsif craps?(roll)
-      self.win_state = false
-    else
-      point = roll
-      loop do
-        roll = roll_2d6
-        if roll == point
-          self.win_state = true
-        elsif roll == 7
-          self.win_state = false
-        end
-        break unless win_state.nil?
-      end
-    end
-    win_state
+welcome
+
+# 100 USD is starting capital
+STARTING_CAPITAL = 100
+
+capital = Capital.new(STARTING_CAPITAL)
+
+display_capital(capital)
+
+loop do
+  begin
+
+  bet = enter_bet
+
+  raise(BetError, "Your bet can't go over $#{capital.funds}.") if bet > capital.funds
+  raise(BetError, "Your bet has to be postive.") unless bet.positive?
+  rescue BetError => e
+    puts e.message
+    retry
+  rescue ArgumentError
+    puts "Your bet has to be a number."
+    retry
+end
+
+  game = Craps.new
+  game.start_game
+
+  process_game_result(game, capital, bet)
+
+  display_capital(capital)
+
+  unless capital.funds.positive?
+    puts "You don't have enough money."
+    break
   end
 
-  private
-
-  attr_writer :win_state
-
-  def roll_2d6
-    dice = Dice.new(6)
-    dice.roll(2)
-  end
-
-  def seven_eleven?(roll)
-    roll == 7 || roll == 11
-  end
-
-  def craps?(roll)
-    roll == 2 || roll == 3 || roll == 12
-  end
+  choice = play_again_prompt
+  break unless choice == "Y"
 end
