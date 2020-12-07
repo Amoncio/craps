@@ -33,4 +33,15 @@ module MainHelper
     print "Do you want to play again? "
     gets.upcase[0]
   end
+
+  def pause
+    puts "Press ENTER to play Craps!"
+    gets
+  end
+
+  def display_rolls(game)
+    game.rolls.each do |roll|
+      puts "You rolled #{roll.first} and #{roll.last}! [#{roll.sum}]"
+    end
+  end
 end

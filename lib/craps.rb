@@ -2,7 +2,10 @@ module Lib
   class Craps
     require_relative "dice"
 
-    attr_reader :win_state
+    attr_reader :win_state, :rolls
+    def initialize
+      @rolls = []
+    end
 
     def start_game
       # Reset win state whenever we start a new game
@@ -30,11 +33,13 @@ module Lib
 
     private
 
-    attr_writer :win_state
+    attr_writer :win_state, :rolls
 
     def roll_2d6
-      dice = Dice.new(6)
-      dice.roll(2)
+      dice = Dice.new
+      total = dice.roll(2)
+      rolls << dice.last_roll
+      total
     end
 
     def seven_eleven?(roll)
