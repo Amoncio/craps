@@ -1,7 +1,7 @@
 class Dice
   attr_reader :sides, :last_roll
 
-  def initialize(sides)
+  def initialize(sides = 6)
     @sides = sides
     @last_roll = []
   end
