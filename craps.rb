@@ -34,6 +34,8 @@ end
   game = Craps.new
   game.start_game
 
+  pause
+  display_rolls(game)
   process_game_result(game, capital, bet)
 
   display_capital(capital)
